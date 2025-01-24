@@ -121,7 +121,6 @@ test/
 set.py
 
 
-cerberus/
 example2.py
 example_msmarco_v2_hybrid.py
 example_msmarco_v2.py
@@ -137,3 +136,5 @@ gar_aff.py
 example.py
 run.py
 ore/
+example_main.py
+run.py
