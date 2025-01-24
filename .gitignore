@@ -112,9 +112,10 @@ ENV/
 .DS_Store
 berus/
 
-*.gitignore
+.gitignore
 test/
 .github/
+*.github/
 .txt
 .toml
 set.py
