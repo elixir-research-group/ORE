@@ -2,7 +2,7 @@
 
 __version__ = '0.1.0'
 
-from cerberus._cerberus import Cerberus
+from cerberus.cerberus_bandit_final import Cerberus
 
 __all__ = [
     'Cerberus',

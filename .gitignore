@@ -110,3 +110,28 @@ ENV/
 
 # Misc
 .DS_Store
+berus/
+
+*.gitignore
+test/
+.github/
+.txt
+.toml
+set.py
+
+
+cerberus/
+example2.py
+example_msmarco_v2_hybrid.py
+example_msmarco_v2.py
+example_trec_covid_adaptive.py
+example_trec_covid.py
+hybrid_gar.py
+hybrid_quam.py
+pyterrier_quam.py
+ranklamma_pyterrier.py
+*.ipynb
+tct.py
+gar_aff.py
+example.py
+run.py

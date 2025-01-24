@@ -1,5 +1,0 @@
-pytest
-pytest-cov
-pytest-subtests
-pytest-json-report
-ruff
