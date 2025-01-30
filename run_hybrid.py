@@ -102,8 +102,10 @@ result = pt.Experiment(
     names=[
         f"rrf_bm25_tct.c{args.budget}",
         f"cc_bm25_tct.c{args.budget}",
-        f"HybridCerberus.c{args.budget}"
-        ]
+        f"Hybridore.c{args.budget}"
+        ],
+        save_dir=save_dir,
+        save_mode='reuse'
 
 
 )

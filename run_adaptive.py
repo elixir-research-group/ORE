@@ -40,7 +40,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"device: {device}")
 
 model = TasB.dot(batch_size=1, device=device)
-idx = FlexIndex.from_hf('macavaney/msmarco-passage.tasb.flex')
+idx = FlexIndex.from_hf('<path to tasb flex index>')
 
 indexref  =  "<path to bm25 index>"
 existing_index = pt.IndexFactory.of(indexref)
@@ -105,8 +105,10 @@ result = pt.Experiment(
             f"{args.retriever}_monot5.c{args.budget}",
             f"GAR.c{args.budget}",
             f"QuAM.c{args.budget}",
-            f"Cerberus.c{args.budget}"
-            ]
+            f"ore.c{args.budget}"
+            ],
+            save_dir=save_dir,
+            save_mode='reuse'
     )
 
 print(result.T)
