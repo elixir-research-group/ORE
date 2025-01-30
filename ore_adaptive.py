@@ -27,7 +27,6 @@ import torch
 
 
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 dataset_store = ir_datasets.load('msmarco-passage')
 docstore = dataset_store.docs_store()
@@ -37,10 +36,7 @@ existing_index = pt.IndexFactory.of(indexref)
 ret_scorer = pt.text.scorer(takes="docs", body_attr="text", wmodel="BM25",background_index= existing_index, controls={"termpipelines": "Stopwords,PorterStemmer"})
 
 
-
-print("device",device)
-
-class ORE(pt.Transformer):
+class OREAdaptive(pt.Transformer):
     def __init__(self, dual_encoder, scorer,corpus_index, graph: CorpusGraph, 
                  laff_graph: CorpusGraph, *, budget: int = 100, verbose: bool = False, 
                  batch_size : int = 16, num_bm25_calls: int=10, top_s: int = 25, top_s2: int = 15, cross_enc_budget: int = 2, 

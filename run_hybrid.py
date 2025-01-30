@@ -1,22 +1,19 @@
 import pyterrier as pt
 import pyterrier_alpha as pta
 from ir_measures import nDCG, R
-from baselines.gar import GAR
-from baselines.quam import QUAM
-from ore_adaptive import OREAdaptive
+from baselines.hybrid_cc import HybridCC
+from baselines.hybrid_rrf import HybridRRF
+from ore_hybrid import OREHybrid
 
 from pyterrier_dr import FlexIndex, TasB, TctColBert, NumpyIndex
 
 from pyterrier_t5 import MonoT5ReRanker
 
-
 import torch
-
 import argparse
 
 import pandas as pd
 import random
-random.seed(42)
 
 
 parser = argparse.ArgumentParser()
@@ -40,12 +37,15 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"device: {device}")
 
 model = TasB.dot(batch_size=1, device=device)
-idx = FlexIndex.from_hf('macavaney/msmarco-passage.tasb.flex')
+idx = FlexIndex.from_hf('<path to tasb flex index>')
+
 
 indexref  =  "<path to bm25 index>"
 existing_index = pt.IndexFactory.of(indexref)
 
 retriever = pt.terrier.Retriever(existing_index, wmodel="BM25")
+terrier_ = pt.terrier.Retriever(existing_index, wmodel="BM25", num_results=256)
+
 
 tct_retriever = ( TctColBert('castorini/tct_colbert-v2-hnp-msmarco') >>
                                             NumpyIndex('<path to tct index>', verbose=False, cuda=False))
@@ -63,10 +63,13 @@ We re-use the existing corpus graph (introduced in GAR paper) and laff graph (in
 graph = pta.Artifact.from_hf('macavaney/msmarco-passage.corpusgraph.bm25.16')    
 laff_graph = pta.Artifact.from_hf('macavaney/msmarco-passage.corpusgraph.bm25.128.laff').to_limit_k(args.lk)
 
+
+tct_graph = pta.Artifact.load('<path of the tct graph>').to_limit_k(args.lk)
+
+
+
 scorer = pt.text.get_text(dataset, 'text') >> MonoT5ReRanker(verbose=False, batch_size=args.batch)
 
-
-cerberus = OREAdaptive(model, scorer,idx, graph, laff_graph, budget=args.budget, verbose=True)
 
 dataset = pt.get_dataset(f'irds:msmarco-passage/trec-dl-20{args.dl}/judged')
 
@@ -74,7 +77,7 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
 
 
-save_dir=f"runs/dl{args.dl}/{args.graph_name}/"
+save_dir=f"runs/hybrid/dl{args.dl}/{args.graph_name}/"
 
 print(f"number of cross encoder calls: {args.ce}")
 
@@ -82,33 +85,28 @@ print(f"number of cross encoder calls: {args.ce}")
 tct_res = tct_retriever(dataset.get_topics())
 
 
+
 result = pt.Experiment(
-        [   
-            retriever % args.budget >> scorer,
+    [   
+        retriever >> HybridRRF(scorer, num_results=args.budget, df2 = tct_res,verbose=args.verbose),
 
-            retriever  >> GAR(scorer, graph, num_results=args.budget),
+        retriever >> HybridCC(scorer, num_results=args.budget, df2 = tct_res,verbose=args.verbose),
+
+        bm25_cerberus >> OREHybrid(scorer, num_results=args.budget, laff_graph = tct_graph, dense_retriever = tct_retriever,
+                                                terrier_index = existing_index, bm25_retriever = terrier_ ,cross_enc_budget=args.ce ,verbose=args.verbose)
+
+        ],
+    dataset.get_topics(),
+    dataset.qrels,
+    [nDCG@10, nDCG@args.budget, R(rel=2)@args.budget],
+    names=[
+        f"rrf_bm25_tct.c{args.budget}",
+        f"cc_bm25_tct.c{args.budget}",
+        f"HybridCerberus.c{args.budget}"
+        ]
 
 
-            retriever >>  QUAM(scorer=scorer,corpus_graph = laff_graph, num_results=args.budget,
-                              cross_enc_budget=args.ce, top_k_docs=args.s, batch_size=args.batch,
-                                  verbose=args.verbose),
-
-            bm25_cerberus >> OREAdaptive(model, scorer, idx, graph,laff_graph, budget=args.budget, 
-                                      cross_enc_budget=args.ce, param_bounds = (0.25,0.95), num_bm25_calls=0,
-                                      verbose=False, top_s=args.s1, top_s2=args.s2)
-
-            ],
-        dataset.get_topics(),
-        dataset.get_qrels(),
-        [nDCG@10, nDCG@args.budget, R(rel=2)@args.budget],
-        names=[
-            f"{args.retriever}_monot5.c{args.budget}",
-            f"GAR.c{args.budget}",
-            f"QuAM.c{args.budget}",
-            f"Cerberus.c{args.budget}"
-            ]
-    )
+)
 
 print(result.T)
-
 
