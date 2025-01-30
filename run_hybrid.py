@@ -57,14 +57,13 @@ bm25_cerberus = pt.terrier.Retriever(existing_index, wmodel="BM25", num_results=
 
 
 """
-We re-use the existing corpus graph (introduced in GAR paper) and laff graph (introduced in Quam paper).
+We re-use the existing bm25 and tct-based corpus graphs (introduced in GAR paper) and laff graph (introduced in Quam paper).
 """
 
-graph = pta.Artifact.from_hf('macavaney/msmarco-passage.corpusgraph.bm25.16')    
+graph = pta.Artifact.from_hf('macavaney/msmarco-passage.corpusgraph.bm25.16')  
+tct_graph = pta.Artifact.load('macavaney/msmarco-passage.corpusgraph.tcthnp.16')
+
 laff_graph = pta.Artifact.from_hf('macavaney/msmarco-passage.corpusgraph.bm25.128.laff').to_limit_k(args.lk)
-
-
-tct_graph = pta.Artifact.load('<path of the tct graph>').to_limit_k(args.lk)
 
 
 
