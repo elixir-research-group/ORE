@@ -40,6 +40,10 @@ model = TasB.dot(batch_size=1, device=device)
 idx = FlexIndex('<path to tasb flex index>') # default path "indices/msmarco-passage.tasb.flex"
 
 
+indexref = ".pyterrier/corpora/msmarco_passage/index/terrier_stemmed"  ## please check the path of the index
+existing_index = pt.IndexFactory.of(indexref)
+
+
 retriever = pt.terrier.Retriever.from_dataset('msmarco_passage', 'terrier_stemmed', wmodel='BM25')
 terrier_ = pt.terrier.Retriever.from_dataset('msmarco_passage', 'terrier_stemmed', wmodel='BM25', num_results=256)
 
@@ -100,7 +104,7 @@ result = pt.Experiment(
         f"Hybridore.c{args.budget}"
         ],
         save_dir=save_dir,
-        save_mode='reuse'
+        save_mode='reuse' # 'overwrite' to overwrite the existing results
 
 
 )

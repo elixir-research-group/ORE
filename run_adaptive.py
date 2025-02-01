@@ -44,16 +44,15 @@ idx = FlexIndex('<path to tasb flex index>')  # default path "indices/msmarco-pa
 
 # indexref  =  "<path to bm25 index>"
 # existing_index = pt.IndexFactory.of(indexref)
-
 # retriever = pt.terrier.Retriever(existing_index, wmodel="BM25")
 
-retriever = pt.terrier.Retriever.from_dataset('msmarco_passage', 'terrier_stemmed', wmodel='BM25', num_results=100)
+retriever = pt.terrier.Retriever.from_dataset('msmarco_passage', 'terrier_stemmed', wmodel='BM25')
 
 tct_retriever = ( TctColBert('castorini/tct_colbert-v2-hnp-msmarco') >>
                                             NumpyIndex('<path to tct index>', verbose=False, cuda=False))  # default path "indices/castorini_tct_colbert-v2-hnp-msmarco"
 
 
-bm25_cerberus = pt.terrier.Retriever.from_dataset('msmarco_passage', 'terrier_stemmed', wmodel='BM25', num_results=100)
+bm25_cerberus = pt.terrier.Retriever.from_dataset('msmarco_passage', 'terrier_stemmed', wmodel='BM25', num_results=args.budget)
 
 
 
@@ -75,7 +74,7 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
 
 
-save_dir=f"runs/dl{args.dl}/{args.graph_name}/"
+save_dir=f"runs/adaptive/dl{args.dl}/{args.graph_name}/"
 
 print(f"number of cross encoder calls: {args.ce}")
 
@@ -109,7 +108,7 @@ result = pt.Experiment(
             f"ore.c{args.budget}"
             ],
             save_dir=save_dir,
-            save_mode='reuse'
+            save_mode='reuse'   # 'overwrite' to overwrite the existing results
     )
 
 print(result.T)
