@@ -40,19 +40,20 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"device: {device}")
 
 model = TasB.dot(batch_size=1, device=device)
-idx = FlexIndex.from_hf('<path to tasb flex index>')
+idx = FlexIndex('<path to tasb flex index>')  # default path "indices/msmarco-passage.tasb.flex"
 
-indexref  =  "<path to bm25 index>"
-existing_index = pt.IndexFactory.of(indexref)
+# indexref  =  "<path to bm25 index>"
+# existing_index = pt.IndexFactory.of(indexref)
 
-retriever = pt.terrier.Retriever(existing_index, wmodel="BM25")
+# retriever = pt.terrier.Retriever(existing_index, wmodel="BM25")
+
+retriever = pt.terrier.Retriever.from_dataset('msmarco_passage', 'terrier_stemmed', wmodel='BM25', num_results=100)
 
 tct_retriever = ( TctColBert('castorini/tct_colbert-v2-hnp-msmarco') >>
-                                            NumpyIndex('<path to tct index>', verbose=False, cuda=False))
+                                            NumpyIndex('<path to tct index>', verbose=False, cuda=False))  # default path "indices/castorini_tct_colbert-v2-hnp-msmarco"
 
 
-
-bm25_cerberus = pt.terrier.Retriever(existing_index, wmodel="BM25", num_results=args.budget) 
+bm25_cerberus = pt.terrier.Retriever.from_dataset('msmarco_passage', 'terrier_stemmed', wmodel='BM25', num_results=100)
 
 
 
