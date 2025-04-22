@@ -3,6 +3,12 @@
 This is the official Github repository for our paper [Breaking the Lens of the Telescope: Online Relevance Estimation over Large Retrieval Sets](https://arxiv.org/pdf/2504.09353)  accepted in 48th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR 2025), Padua, Italy, 13-17 July 2025,
 
 
+
+<p align="center">
+  <img src="ore.png" />
+</p>
+
+
 ## Requirements
 
 
