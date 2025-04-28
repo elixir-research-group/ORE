@@ -40,7 +40,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"device: {device}")
 
 model = TasB.dot(batch_size=1, device=device)
-idx = FlexIndex('<path to tasb flex index>')  # default path "indices/msmarco-passage.tasb.flex"
+idx = FlexIndex('macavaney/msmarco-passage-v2-dedup.tcthnp.flex')  # default path "indices/msmarco-passage.tasb.flex"
 
 # indexref  =  "<path to bm25 index>"
 # existing_index = pt.IndexFactory.of(indexref)

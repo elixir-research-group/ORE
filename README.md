@@ -64,7 +64,7 @@ python3 run_adaptive.py --budget 100 --s 30 --dl 19 --ce 7 --s1 25 --s2 15
 ```
 @article{rathee2025breaking,
   title={Breaking the Lens of the Telescope: Online Relevance Estimation over Large Retrieval Sets},
-  author={Rathee, Mandeep and MacAvaney, Sean and Anand, Avishek and others},
+  author={Rathee, Mandeep and V, Venktesh and MacAvaney, Sean and Anand, Avishek},
   journal={arXiv preprint arXiv:2504.09353},
   year={2025}
 }
